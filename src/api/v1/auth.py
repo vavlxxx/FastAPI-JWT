@@ -1,11 +1,7 @@
-import secrets
+from fastapi import APIRouter
 
-from fastapi import APIRouter, HTTPException
-
-from src.api.v1.dependencies.auth import LoginData, UserData
-from src.config import settings
+from src.api.v1.dependencies.auth import LoginData, UserDataByAccess, UserDataByRefresh
 from src.services.auth import AuthService
-from src.utils.temp_users import users
 
 router = APIRouter(
     prefix="/auth",
@@ -18,28 +14,39 @@ async def login(login_data: LoginData):
     """
     Login user
     """
-    user_password: str | None = users.get(login_data.username, None)
-    if user_password is None:
-        raise HTTPException(status_code=401, detail="Incorrect username or password")
 
-    is_match = secrets.compare_digest(login_data.password, user_password)
-    if not is_match:
-        raise HTTPException(status_code=401, detail="Incorrect username or password")
-
-    token = AuthService().generate_token(
-        payload={"sub": login_data.username},
-        expires_delta=settings.JWT_EXPIRE_DELTA_ACCESS,
+    access_token = AuthService().create_access_token(
+        payload={"sub": login_data.username, "hello": "world"}
+    )
+    refresh_token = AuthService().create_refresh_token(
+        payload={"sub": login_data.username}
     )
 
     return {
-        "access_token": token,
-        "token_type": "bearer",
+        "access_token": access_token,
+        "refresh_token": refresh_token,
     }
 
 
 @router.get("/profile/")
-async def get_profile(userdata: UserData):
+async def get_profile(userdata: UserDataByAccess):
     """
     User's profile
     """
     return userdata
+
+
+@router.get("/refresh/")
+async def refresh(userdata: UserDataByRefresh):
+    """
+    Refresh token
+    """
+    access_token = AuthService().create_access_token(
+        payload={"sub": userdata, "hello": "world"}
+    )
+    refresh_token = AuthService().create_refresh_token(payload={"sub": userdata})
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+    }
