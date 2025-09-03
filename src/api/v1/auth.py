@@ -1,4 +1,9 @@
-from fastapi import APIRouter
+import secrets
+
+from fastapi import APIRouter, HTTPException
+
+from src.api.v1.dependencies.auth import LoginData
+from src.utils.temp_users import users
 
 router = APIRouter(
     prefix="/auth",
@@ -7,11 +12,19 @@ router = APIRouter(
 
 
 @router.post("/login/")
-async def login():
+async def login(login_data: LoginData):
     """
     Login user
     """
-    return
+    user_password: str | None = users.get(login_data.username, None)
+    if user_password is None:
+        raise HTTPException(status_code=401, detail="Incorrect username or password")  # noqa: F821
+
+    is_match = secrets.compare_digest(login_data.password, user_password)
+    if not is_match:
+        raise HTTPException(status_code=401, detail="Incorrect username or password")
+
+    return login_data
 
 
 @router.get("/profile/")
