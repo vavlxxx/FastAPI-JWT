@@ -5,9 +5,8 @@ import jwt
 from fastapi import HTTPException
 from jwt.exceptions import ExpiredSignatureError
 
-from src.api.v1.dependencies.auth import LoginData
 from src.config import settings
-from src.schemas.auth import TokenType
+from src.schemas.auth import LoginData, TokenType
 from src.utils.temp_users import users
 
 
@@ -67,3 +66,12 @@ class AuthService:
             raise HTTPException(
                 status_code=401, detail="Incorrect username or password"
             )
+
+        access_token = AuthService().create_access_token(
+            payload={"sub": login_data.username}
+        )
+        refresh_token = AuthService().create_refresh_token(
+            payload={"sub": login_data.username}
+        )
+
+        return (access_token, refresh_token)
