@@ -2,9 +2,10 @@ from datetime import datetime, timedelta
 
 import bcrypt
 import jwt
-from fastapi import HTTPException
+from fastapi import HTTPException, Response
 from jwt.exceptions import ExpiredSignatureError
 
+from schemas.auth import UserWithPasswordDTO
 from src.config import settings
 from src.schemas.auth import (
     CreatedTokenDTO,
@@ -89,19 +90,34 @@ class AuthService(BaseService):
             raise HTTPException(status_code=401, detail=str(exc))
         return decoded_token
 
-    async def login_user(self, login_data: LoginData):
-        user = await self.db.auth.get_user_with_passwd(username=login_data.username)
+    async def login_user(
+        self, login_data: LoginData, response: Response
+    ) -> TokenResponseDTO:
+        user: UserWithPasswordDTO = await self.db.auth.get_user_with_passwd(
+            username=login_data.username
+        )
         is_same = self._verify_data(login_data.password, user.hashed_password)
         if not user or not is_same:
             raise InvalidLoginDataError
 
+        return await self.update_tokens(user=user, response=response)
+
+    async def update_tokens(
+        self,
+        response: Response,
+        uid: int | None = None,
+        user: UserDTO | UserWithPasswordDTO | None = None,
+    ) -> TokenResponseDTO:
+        if user is None:
+            user = await self.db.auth.get_one(id=uid)
         access_token = self.create_access_token(
-            payload={"sub": login_data.username, "uid": user.id}
+            payload={"sub": user.username, "uid": user.id}
         )
-        refresh_token = self.create_refresh_token(payload={"sub": login_data.username})
+        refresh_token = self.create_refresh_token(payload={"sub": f"{user.id}"})
+
         hashed_refresh_token = self._hash_data(refresh_token.token)
 
-        token_to_add = TokenAddDTO(
+        token_to_update = TokenAddDTO(
             hashed_data=hashed_refresh_token,
             owner_id=user.id,
             **refresh_token.model_dump(exclude={"token"}),
@@ -110,8 +126,14 @@ class AuthService(BaseService):
             owner_id=user.id,
             ensure_existence=False,
         )
-        await self.db.tokens.add(token_to_add)
+        await self.db.tokens.add(token_to_update)
         await self.db.commit()
+
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token.token,
+            httponly=True,
+        )
 
         return TokenResponseDTO(
             access_token=access_token.token,
@@ -127,3 +149,6 @@ class AuthService(BaseService):
         user = await self.db.auth.add(user_to_add)
         await self.db.commit()
         return user
+
+    async def get_profile(self, username: str) -> UserDTO:
+        return await self.db.auth.get_user_with_passwd(username=username)

@@ -1,6 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 
-from src.api.v1.dependencies.auth import UserDataByAccess, UserDataByRefresh
+from schemas.auth import UserDTO
+from src.api.v1.dependencies.auth import UidByRefresh, UsernameByAccess
 from src.api.v1.dependencies.db import DBDep
 from src.schemas.auth import LoginData, RegisterData, TokenResponseDTO
 from src.services.auth import AuthService
@@ -15,11 +16,24 @@ router = APIRouter(
 async def login(
     db: DBDep,
     login_data: LoginData,
-) -> TokenResponseDTO:
+    response: Response,
+):
     """
     Login user
     """
-    return await AuthService(db).login_user(login_data=login_data)
+    token_response: TokenResponseDTO = await AuthService(db).login_user(
+        login_data=login_data,
+        response=response,
+    )
+
+    return {
+        "status": "ok",
+        "data": {
+            "access_token": token_response.access_token,
+            "refresh_token": token_response.refresh_token,
+            "token_type": "Bearer",
+        },
+    }
 
 
 @router.post("/register/")
@@ -34,21 +48,36 @@ async def register(
 
 
 @router.get("/profile/")
-async def get_profile(userdata: UserDataByAccess):
+async def get_profile(
+    db: DBDep,
+    username: UsernameByAccess,
+) -> UserDTO:
     """
     User's profile
     """
-    return userdata
+    user = await AuthService(db).get_profile(username=username)
+    return user
 
 
 @router.get("/refresh/")
-async def refresh(userdata: UserDataByRefresh):
+async def refresh(
+    db: DBDep,
+    uid: UidByRefresh,
+    response: Response,
+):
     """
     Refresh token
     """
-    access_token, refresh_token = (..., ...)
+    token_response: TokenResponseDTO = await AuthService(db).update_tokens(
+        uid=uid,
+        response=response,
+    )
 
     return {
-        "access_token": access_token,
-        "refresh_token": refresh_token,
+        "status": "ok",
+        "data": {
+            "access_token": token_response.access_token,
+            "refresh_token": token_response.refresh_token,
+            "token_type": "Bearer",
+        },
     }
