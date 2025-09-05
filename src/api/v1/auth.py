@@ -1,10 +1,21 @@
 from fastapi import APIRouter, Response
 
-from schemas.auth import UserDTO
 from src.api.v1.dependencies.auth import UidByRefresh, UsernameByAccess
 from src.api.v1.dependencies.db import DBDep
-from src.schemas.auth import LoginData, RegisterData, TokenResponseDTO
+from src.api.v1.responses.auth import (
+    AUTH_LOGIN_RESPONSES,
+    AUTH_PROFILE_RESPONSES,
+    AUTH_REFRESH_RESPONSES,
+    AUTH_REGISTER_RESPONSES,
+)
+from src.schemas.auth import LoginData, RegisterData, TokenResponseDTO, UserDTO
 from src.services.auth import AuthService
+from src.utils.exceptions import (
+    InvalidLoginDataError,
+    InvalidLoginDataHTTPError,
+    UserNotFoundError,
+    UserNotFoundHTTPError,
+)
 
 router = APIRouter(
     prefix="/auth",
@@ -12,72 +23,81 @@ router = APIRouter(
 )
 
 
-@router.post("/login/")
+@router.post(
+    path="/login/",
+    responses=AUTH_LOGIN_RESPONSES,
+)
 async def login(
     db: DBDep,
     login_data: LoginData,
     response: Response,
 ):
     """
-    Login user
+    ## 🔒 Login to existing user account
     """
-    token_response: TokenResponseDTO = await AuthService(db).login_user(
-        login_data=login_data,
-        response=response,
-    )
+    try:
+        token_response: TokenResponseDTO = await AuthService(db).login_user(
+            login_data=login_data,
+            response=response,
+        )
+    except InvalidLoginDataError as exc:
+        raise InvalidLoginDataHTTPError from exc
 
-    return {
-        "status": "ok",
-        "data": {
-            "access_token": token_response.access_token,
-            "refresh_token": token_response.refresh_token,
-            "token_type": "Bearer",
-        },
-    }
+    return token_response
 
 
-@router.post("/register/")
+@router.post(
+    path="/register/",
+    responses=AUTH_REGISTER_RESPONSES,
+)
 async def register(
     db: DBDep,
     register_data: RegisterData,
 ):
     """
-    Register user
+    ## 🔒 Register new user
+
+    Only username and password are required
     """
     return await AuthService(db).register_user(register_data=register_data)
 
 
-@router.get("/profile/")
+@router.get(
+    path="/profile/",
+    responses=AUTH_PROFILE_RESPONSES,
+)
 async def get_profile(
     db: DBDep,
     username: UsernameByAccess,
 ) -> UserDTO:
     """
-    User's profile
+    ## 🔒 Authorized user profile
+
+    Example of data which can be stored in User model of database
     """
-    user = await AuthService(db).get_profile(username=username)
-    return user
+    try:
+        return await AuthService(db).get_profile(username=username)
+    except UserNotFoundError as exc:
+        raise UserNotFoundHTTPError from exc
 
 
-@router.get("/refresh/")
+@router.get(
+    path="/refresh/",
+    responses=AUTH_REFRESH_RESPONSES,
+)
 async def refresh(
     db: DBDep,
     uid: UidByRefresh,
     response: Response,
-):
+) -> TokenResponseDTO:
     """
-    Refresh token
+    ## 🗝️ Get new access and refresh tokens
+
+    Authorized user can get new access and refresh tokens by restoring refresh token from **http only** cookie `refresh_token`
     """
     token_response: TokenResponseDTO = await AuthService(db).update_tokens(
         uid=uid,
         response=response,
     )
 
-    return {
-        "status": "ok",
-        "data": {
-            "access_token": token_response.access_token,
-            "refresh_token": token_response.refresh_token,
-            "token_type": "Bearer",
-        },
-    }
+    return token_response

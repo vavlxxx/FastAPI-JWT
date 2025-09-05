@@ -19,7 +19,11 @@ from src.schemas.auth import (
 )
 from src.services.base import BaseService
 from src.utils.db_manager import DBManager
-from src.utils.exceptions import InvalidLoginDataError
+from src.utils.exceptions import (
+    InvalidLoginDataError,
+    ObjectNotFoundError,
+    UserNotFoundError,
+)
 
 
 class AuthService(BaseService):
@@ -93,9 +97,13 @@ class AuthService(BaseService):
     async def login_user(
         self, login_data: LoginData, response: Response
     ) -> TokenResponseDTO:
-        user: UserWithPasswordDTO = await self.db.auth.get_user_with_passwd(
-            username=login_data.username
-        )
+        try:
+            user: UserWithPasswordDTO = await self.db.auth.get_user_with_passwd(
+                username=login_data.username
+            )
+        except ObjectNotFoundError as exc:
+            raise InvalidLoginDataError from exc
+
         is_same = self._verify_data(login_data.password, user.hashed_password)
         if not user or not is_same:
             raise InvalidLoginDataError
@@ -151,4 +159,7 @@ class AuthService(BaseService):
         return user
 
     async def get_profile(self, username: str) -> UserDTO:
-        return await self.db.auth.get_user_with_passwd(username=username)
+        try:
+            return await self.db.auth.get_user_with_passwd(username=username)
+        except ObjectNotFoundError as exc:
+            raise UserNotFoundError from exc
