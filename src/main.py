@@ -29,14 +29,14 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 configurate_logging()
 app = FastAPI(
     lifespan=lifespan,
-    title=settings.app.TITLE,
+    title=settings.app.title,
 )
 app.include_router(main_router)
 
 if __name__ == "__main__":
     uvicorn.run(
         app="main:app",
-        host=settings.uvicorn.UVICORN_HOST,
-        port=settings.uvicorn.UVICORN_PORT,
-        reload=settings.uvicorn.UVICORN_RELOAD,
+        host=settings.uvicorn.host,
+        port=settings.uvicorn.port,
+        reload=settings.uvicorn.reload,
     )

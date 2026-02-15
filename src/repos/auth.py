@@ -4,11 +4,19 @@ from sqlalchemy.exc import NoResultFound
 from src.models.auth import Token, User
 from src.repos.base import BaseRepo
 from src.repos.mappers.mappers import AuthMapper, TokenMapper
-from src.schemas.auth import TokenDTO, UserDTO, UserWithPasswordDTO
+from src.schemas.auth import (
+    TokenAddDTO,
+    TokenDTO,
+    TokenUpdateDTO,
+    UserAddDTO,
+    UserDTO,
+    UserUpdateDTO,
+    UserWithPasswordDTO,
+)
 from src.utils.exceptions import ObjectNotFoundError
 
 
-class AuthRepo(BaseRepo[User, UserDTO]):
+class AuthRepo(BaseRepo[User, UserDTO, UserAddDTO, UserUpdateDTO]):
     model = User
     schema = UserDTO
     mapper = AuthMapper
@@ -23,7 +31,7 @@ class AuthRepo(BaseRepo[User, UserDTO]):
         return UserWithPasswordDTO.model_validate(obj)
 
 
-class TokenRepo(BaseRepo[Token, TokenDTO]):
+class TokenRepo(BaseRepo[Token, TokenDTO, TokenAddDTO, TokenUpdateDTO]):
     model = Token
     schema = TokenDTO
     mapper = TokenMapper

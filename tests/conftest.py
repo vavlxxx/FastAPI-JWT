@@ -1,6 +1,7 @@
 # ruff: noqa: E402
 
 from typing import Any, AsyncGenerator
+from urllib.parse import urljoin
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -30,8 +31,8 @@ async def db_module() -> AsyncGenerator[DBManager, None]:
 
 @pytest.fixture(scope="session", autouse=True)
 async def check_test_mode() -> None:
-    assert settings.app.MODE == "TEST"
-    assert settings.db.DB_NAME == settings.db.DB_NAME_TEST
+    assert settings.app.mode == "TEST"
+    assert settings.db.name == settings.db.name_test
 
 
 @pytest.fixture
@@ -64,9 +65,12 @@ async def async_main() -> None:
 @pytest.fixture(scope="session")
 async def ac() -> AsyncGenerator[AsyncClient, Any]:
     app_ = ASGITransport(app=app)
+    host = f"http://{settings.uvicorn.host}:{settings.uvicorn.port}"
+    api_meta = f"{settings.app.api_prefix}{settings.app.v1_prefix}"
+    url = urljoin(host, api_meta)
     async with AsyncClient(
         transport=app_,
-        base_url=f"http://{settings.uvicorn.UVICORN_HOST}:{settings.uvicorn.UVICORN_PORT}/api/v1",
+        base_url=url,
     ) as ac:
         yield ac
 

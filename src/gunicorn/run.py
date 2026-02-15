@@ -12,14 +12,14 @@ def main():
     GunicornApp(
         app=app,
         options=get_app_options(
-            host=settings.gunicorn.GUNICORN_HOST,
-            port=settings.gunicorn.GUNICORN_PORT,
-            workers=settings.gunicorn.GUNICORN_WORKERS,
-            timeout=settings.gunicorn.GUNICORN_TIMEOUT,
-            workers_class=settings.gunicorn.GUNICORN_WORKERS_CLASS,
-            access_log=settings.gunicorn.GUNICORN_ACCESS_LOG,
-            error_log=settings.gunicorn.GUNICORN_ERROR_LOG,
-            reload=settings.gunicorn.GUNICORN_RELOAD,
+            host=settings.gunicorn.host,
+            port=settings.gunicorn.port,
+            workers=settings.gunicorn.workers,
+            timeout=settings.gunicorn.timeout,
+            workers_class=settings.gunicorn.workers_class,
+            access_log=settings.gunicorn.access_log,
+            error_log=settings.gunicorn.error_log,
+            reload=settings.gunicorn.reload,
         ),
     ).run()
 

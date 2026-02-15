@@ -34,11 +34,11 @@ openssl rsa -in jwt-private.pem -outform PEM -pubout -out jwt-public.pem
 
 # database config
 
-CFG_DB__DB_HOST=localhost # в .env.docker будет название контейнера с PostgreSQL
-CFG_DB__DB_USER=postgres
-CFG_DB__DB_NAME=postgres # в .env.test будет название тестовой БД (должно совпасть с DB_NAME_TEST)
-CFG_DB__DB_PORT=5432 # для .env.docker будет прокинутый порт
-CFG_DB__DB_PASSWORD=postgres
+CFG_DB__HOST=localhost # в .env.docker будет название контейнера с PostgreSQL
+CFG_DB__USER=postgres
+CFG_DB__NAME=postgres # в .env.test будет название тестовой БД (должно совпасть с NAME_TEST)
+CFG_DB__PORT=5432 # для .env.docker будет прокинутый порт
+CFG_DB__PASSWORD=postgres
 
 # app config
 

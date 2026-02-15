@@ -11,7 +11,7 @@ class Base(DeclarativeBase, TimingMixin):
         "eager_defaults": True,
     }
 
-    metadata = MetaData(naming_convention=settings.db.NAMING_CONVENTION)
+    metadata = MetaData(naming_convention=settings.db.naming_convention)
     repr_exclude_cols = (
         "created_at",
         "updated_at",

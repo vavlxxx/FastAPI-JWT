@@ -63,6 +63,10 @@ class TokenAddDTO(BaseDTO):
     expires_at: datetime
 
 
+class TokenUpdateDTO(BaseDTO):
+    expires_at: datetime
+
+
 class TokenDTO(TokenAddDTO):
     id: int
 

@@ -4,26 +4,26 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from src.config import settings
 
 engine = create_async_engine(
-    url=settings.db.DB_URL,
-    echo=settings.db.DB_ECHO,
+    url=settings.db.async_url,
+    echo=settings.db.echo,
 )
 
 sessionmaker = async_sessionmaker(
     bind=engine,
     class_=AsyncSession,
-    autocommit=settings.db.DB_AUTOCOMMIT,
-    autoflush=settings.db.DB_AUTOFLUSH,
-    expire_on_commit=settings.db.DB_EXPIRE_ON_COMMIT,
+    autocommit=settings.db.autocommit,
+    autoflush=settings.db.autoflush,
+    expire_on_commit=settings.db.expire_on_commit,
 )
 
 engine_null_pool = create_async_engine(
-    url=settings.db.DB_URL,
+    url=settings.db.async_url,
     poolclass=NullPool,
 )
 
 sessionmaker_null_pool = async_sessionmaker(
     bind=engine_null_pool,
-    autocommit=settings.db.DB_AUTOCOMMIT,
-    autoflush=settings.db.DB_AUTOFLUSH,
-    expire_on_commit=settings.db.DB_EXPIRE_ON_COMMIT,
+    autocommit=settings.db.autocommit,
+    autoflush=settings.db.autoflush,
+    expire_on_commit=settings.db.expire_on_commit,
 )
