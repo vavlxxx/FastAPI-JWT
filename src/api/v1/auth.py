@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, Depends, Response
+from fastapi import APIRouter, Body, Response
 
 from src.api.v1.dependencies.auth import UidByAccess, UidByRefresh
 from src.api.v1.dependencies.db import DBDep
@@ -21,7 +21,6 @@ from src.utils.exceptions import (
     UserNotFoundError,
     UserNotFoundHTTPError,
 )
-from src.utils.permissions import IsAdminPermission
 
 router = APIRouter(
     prefix="/auth",
@@ -81,7 +80,6 @@ async def register(
     path="/profile/",
     summary="Получить профиль пользователя",
     responses=AUTH_PROFILE_RESPONSES,
-    dependencies=(Depends(IsAdminPermission()),),
 )
 async def get_profile(
     db: DBDep,
