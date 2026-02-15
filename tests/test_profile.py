@@ -34,7 +34,7 @@ async def test_get_user_profile_with_invalid_token(authenticated_ac: AsyncClient
         headers={"Authorization": "Bearer invalid_token"},
     )
     assert response
-    assert response.status_code == CannotDecodeTokenHTTPError.status
+    assert response.status_code == CannotDecodeTokenHTTPError.status_code
     data = response.json()
     assert data["detail"] == CannotDecodeTokenHTTPError.detail
 
@@ -64,7 +64,7 @@ async def test_get_user_profile_with_refresh_token(authenticated_ac: AsyncClient
         headers={"Authorization": f"Bearer {refresh_token}"},
     )
     assert response
-    assert response.status_code == InvalidTokenTypeHTTPError.status
+    assert response.status_code == InvalidTokenTypeHTTPError.status_code
     data = response.json()
     assert data["detail"] == InvalidTokenTypeHTTPError.detail.format("access", "refresh")
 
@@ -75,7 +75,7 @@ async def test_get_profile_by_token_with_not_existing_user(authenticated_ac: Asy
         "/auth/profile/",
         headers={"Authorization": f"Bearer {access_token.token}"},
     )
-    assert response.status_code == UserNotFoundHTTPError.status
+    assert response.status_code == UserNotFoundHTTPError.status_code
     data = response.json()
     assert data["detail"] == UserNotFoundHTTPError.detail
 
@@ -87,7 +87,7 @@ async def test_get_profile_witout_subject_field(authenticated_ac: AsyncClient):
         headers={"Authorization": f"Bearer {token.token}"},
     )
     assert response
-    assert response.status_code == MissingSubjectHTTPError.status
+    assert response.status_code == MissingSubjectHTTPError.status_code
     assert response.json()["detail"] == MissingSubjectHTTPError.detail
 
 
@@ -99,7 +99,7 @@ async def test_get_profile_with_expired_token(authenticated_ac: AsyncClient):
         headers={"Authorization": f"Bearer {expired_token.token}"},
     )
     assert response
-    assert response.status_code == ExpiredSignatureHTTPError.status
+    assert response.status_code == ExpiredSignatureHTTPError.status_code
     data = response.json()
     assert data["detail"] == ExpiredSignatureHTTPError.detail
 
@@ -177,7 +177,7 @@ async def test_get_new_tokens_by_access(authenticated_ac: AsyncClient):
     authenticated_ac.cookies[settings.auth.REFRESH_TOKEN_COOKIE_KEY] = access_token
     response = await authenticated_ac.get("/auth/refresh/")
     assert response
-    assert response.status_code == InvalidTokenTypeHTTPError.status
+    assert response.status_code == InvalidTokenTypeHTTPError.status_code
     data = response.json()
     assert data["detail"] == InvalidTokenTypeHTTPError.detail.format("refresh", "access")
     authenticated_ac.cookies[settings.auth.REFRESH_TOKEN_COOKIE_KEY] = refresh_token
@@ -195,7 +195,7 @@ async def test_get_new_tokens_by_withdrawn_refresh_token(authenticated_ac: Async
 
     response = await authenticated_ac.get("/auth/refresh/")
     assert response
-    assert response.status_code == WithdrawnTokenHTTPError.status
+    assert response.status_code == WithdrawnTokenHTTPError.status_code
     data = response.json()
     assert data["detail"] == WithdrawnTokenHTTPError.detail
 
@@ -216,6 +216,6 @@ async def test_logout_user(authenticated_ac: AsyncClient) -> None:
     assert settings.auth.REFRESH_TOKEN_COOKIE_KEY not in authenticated_ac.cookies
 
     response = await authenticated_ac.post("/auth/logout/")
-    assert response.status_code == MissingTokenHTTPError.status
+    assert response.status_code == MissingTokenHTTPError.status_code
     data = response.json()
     assert data["detail"] == MissingTokenHTTPError.detail

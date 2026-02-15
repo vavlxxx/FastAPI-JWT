@@ -7,6 +7,12 @@ from pydantic import Field, model_validator
 from src.schemas.base import BaseDTO
 
 
+class UserRole(str, Enum):
+    SUPERUSER = "superuser"
+    ADMIN = "admin"
+    USER = "user"
+
+
 class UserLoginDTO(BaseDTO):
     username: str = Field("admin123", min_length=8, max_length=32)
     password: str = Field("admin123", min_length=8)
@@ -25,6 +31,7 @@ class UserAddDTO(BaseDTO):
 class UserDTO(BaseDTO):
     id: int
     username: str = Field(..., min_length=8, max_length=32)
+    role: UserRole
     first_name: str | None = Field(None, min_length=1, max_length=150)
     last_name: str | None = Field(None, min_length=1, max_length=150)
 

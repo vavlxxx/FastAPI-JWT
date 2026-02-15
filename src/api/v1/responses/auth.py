@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 from fastapi import status
 
-from src.schemas.auth import TokenResponseDTO, UserDTO
+from src.schemas.auth import TokenResponseDTO, UserDTO, UserRole
 from src.utils.exceptions import (
     ExpiredSignatureHTTPError,
     InvalidLoginDataHTTPError,
@@ -124,6 +124,7 @@ AUTH_REGISTER_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
         "example": UserDTO(
             id=1,
             username="cool_user",
+            role=UserRole.USER,
             first_name="Veronika",
             last_name="Ivanova",
         ),
@@ -142,6 +143,7 @@ AUTH_PROFILE_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
         "example": UserDTO(
             id=1,
             username="cool_user",
+            role=UserRole.USER,
             first_name="Veronika",
             last_name="Ivanova",
         ),

@@ -79,3 +79,4 @@ def downgrade() -> None:
     """Downgrade schema."""
     op.drop_table("tokens")
     op.drop_table("users")
+    op.execute("DROP TYPE IF EXISTS tokentype")

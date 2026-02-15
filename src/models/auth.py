@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.models.base import Base
-from src.schemas.auth import TokenType
+from src.schemas.auth import TokenType, UserRole
 
 
 class User(Base):
@@ -13,6 +13,7 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, sort_order=-1)
     username: Mapped[str] = mapped_column(String(length=32), unique=True)
+    role: Mapped[UserRole] = mapped_column(ENUM(UserRole), default=UserRole.USER)
     first_name: Mapped[str | None]
     last_name: Mapped[str | None]
     hashed_password: Mapped[str]

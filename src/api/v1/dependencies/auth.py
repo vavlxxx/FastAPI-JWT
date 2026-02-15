@@ -6,8 +6,8 @@ from jwt import ExpiredSignatureError
 
 from src.api.v1.dependencies.db import DBDep
 from src.config import settings
-from src.schemas.auth import TokenType
-from src.services.auth import TokenService
+from src.schemas.auth import TokenType, UserDTO
+from src.services.auth import AuthService, TokenService
 from src.utils.exceptions import (
     CannotDecodeTokenError,
     CannotDecodeTokenHTTPError,
@@ -17,6 +17,8 @@ from src.utils.exceptions import (
     MissingTokenHTTPError,
     ObjectNotFoundError,
     TokenExipedError,
+    UserNotFoundError,
+    UserNotFoundHTTPError,
     WithdrawnTokenHTTPError,
 )
 
@@ -89,3 +91,13 @@ def resolve_token_by_type(token_type: TokenType):
 
 UidByAccess = Annotated[int, Depends(resolve_token_by_type(TokenType.ACCESS))]
 UidByRefresh = Annotated[int, Depends(resolve_token_by_type(TokenType.REFRESH))]
+
+
+async def get_current_user(uid: UidByAccess, db: DBDep):
+    try:
+        return await AuthService(db).get_profile(uid=uid)
+    except UserNotFoundError as exc:
+        raise UserNotFoundHTTPError from exc
+
+
+GetUserDTO = Annotated[UserDTO, Depends(get_current_user)]
