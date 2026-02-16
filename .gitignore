@@ -217,7 +217,7 @@ __marimo__/
 
 # Custom
 .vscode/
-creds/
+creds/*
 logs/
 .env.test
 .env.docker
