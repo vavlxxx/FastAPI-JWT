@@ -3,7 +3,11 @@ from typing import Any, Dict
 
 from fastapi import status
 
-from src.schemas.auth import TokenResponseDTO, UserDTO, UserRole
+from src.schemas.auth import (
+    TokenResponseDTO,
+    UserDTO,
+    UserRole,
+)
 from src.utils.exceptions import (
     ExpiredSignatureHTTPError,
     InvalidLoginDataHTTPError,
@@ -15,7 +19,9 @@ from src.utils.exceptions import (
     WithdrawnTokenHTTPError,
 )
 
-AUTH_REFRESH_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
+AUTH_REFRESH_RESPONSES: (
+    Dict[int | str, Dict[str, Any]] | None
+) = {
     status.HTTP_200_OK: {
         "description": "Токены успешно обновлены",
         "model": TokenResponseDTO,
@@ -26,7 +32,13 @@ AUTH_REFRESH_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
     },
     status.HTTP_403_FORBIDDEN: {
         "description": "Отозванный или просроченный refresh токен",
-        "content": {"application/json": {"example": {"detail": WithdrawnTokenHTTPError.detail}}},
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": WithdrawnTokenHTTPError.detail
+                }
+            }
+        },
     },
     status.HTTP_422_UNPROCESSABLE_ENTITY: {
         "description": "Некорректные данные",
@@ -73,7 +85,9 @@ AUTH_REFRESH_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
 }
 
 
-AUTH_LOGIN_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
+AUTH_LOGIN_RESPONSES: (
+    Dict[int | str, Dict[str, Any]] | None
+) = {
     status.HTTP_200_OK: {
         "description": "Успешная авторизация пользователя",
         "model": TokenResponseDTO,
@@ -84,14 +98,28 @@ AUTH_LOGIN_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
     },
     status.HTTP_401_UNAUTHORIZED: {
         "description": "Неверные данные для входа",
-        "content": {"application/json": {"example": {"detail": InvalidLoginDataHTTPError.detail}}},
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": InvalidLoginDataHTTPError.detail
+                }
+            }
+        },
     },
 }
 
-AUTH_LOGOUT_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
+AUTH_LOGOUT_RESPONSES: (
+    Dict[int | str, Dict[str, Any]] | None
+) = {
     status.HTTP_200_OK: {
         "description": "Успешный выход из аккаунта",
-        "content": {"application/json": {"example": {"detail": "Successfully logged out"}}},
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "Successfully logged out"
+                }
+            }
+        },
     },
     status.HTTP_401_UNAUTHORIZED: {
         "description": "Не аутентифицирован",
@@ -118,7 +146,9 @@ AUTH_LOGOUT_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
     },
 }
 
-AUTH_REGISTER_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
+AUTH_REGISTER_RESPONSES: (
+    Dict[int | str, Dict[str, Any]] | None
+) = {
     status.HTTP_200_OK: {
         "description": "Успешная регистрация пользователя",
         "model": UserDTO,
@@ -134,12 +164,20 @@ AUTH_REGISTER_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
     },
     status.HTTP_409_CONFLICT: {
         "description": "Пользователь с таким username уже зарегистрирован",
-        "content": {"application/json": {"example": {"detail": UserExistsHTTPError.detail}}},
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": UserExistsHTTPError.detail
+                }
+            }
+        },
     },
 }
 
 
-AUTH_PROFILE_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
+AUTH_PROFILE_RESPONSES: (
+    Dict[int | str, Dict[str, Any]] | None
+) = {
     status.HTTP_200_OK: {
         "description": "Профиль пользователя",
         "model": UserDTO,
@@ -155,7 +193,13 @@ AUTH_PROFILE_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
     },
     status.HTTP_404_NOT_FOUND: {
         "description": "Пользователь не найден",
-        "content": {"application/json": {"example": {"detail": UserNotFoundHTTPError.detail}}},
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": UserNotFoundHTTPError.detail
+                }
+            }
+        },
     },
     status.HTTP_422_UNPROCESSABLE_ENTITY: {
         "description": "Некорректные данные",

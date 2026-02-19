@@ -14,12 +14,16 @@ class UserRole(str, Enum):
 
 
 class UserLoginDTO(BaseDTO):
-    username: str = Field("admin123", min_length=8, max_length=32)
+    username: str = Field(
+        "admin123", min_length=8, max_length=32
+    )
     password: str = Field("admin123", min_length=8)
 
 
 class UserRegisterDTO(UserLoginDTO):
-    username: str = Field("admin123", min_length=8, max_length=32)
+    username: str = Field(
+        "admin123", min_length=8, max_length=32
+    )
     password: str = Field("admin123", min_length=8)
 
 
@@ -32,8 +36,12 @@ class UserDTO(BaseDTO, TimingDTO):
     id: int
     username: str = Field(..., min_length=8, max_length=32)
     role: UserRole
-    first_name: str | None = Field(None, min_length=1, max_length=150)
-    last_name: str | None = Field(None, min_length=1, max_length=150)
+    first_name: str | None = Field(
+        None, min_length=1, max_length=150
+    )
+    last_name: str | None = Field(
+        None, min_length=1, max_length=150
+    )
 
 
 class UserUpdateDTO(BaseDTO):
@@ -42,9 +50,13 @@ class UserUpdateDTO(BaseDTO):
 
     @model_validator(mode="before")
     @classmethod
-    def check_atleast_one_field_provided(cls, data: Any) -> Any:
+    def check_atleast_one_field_provided(
+        cls, data: Any
+    ) -> Any:
         if not any(data.values()):
-            raise ValueError("Provide at least one not empty field for update")
+            raise ValueError(
+                "Provide at least one not empty field for update"
+            )
         return data
 
 

@@ -7,9 +7,11 @@ from src.schemas.base import BaseDTO, TimingDTO
 class RuleAddDTO(BaseDTO):
     code: str
     title: str = Field(..., min_length=1, max_length=150)
-    description: str | None = Field(None, min_length=1, max_length=150)
+    description: str | None = Field(
+        None, min_length=1, max_length=150
+    )
     error_message: str
-    assosiated_role: UserRole
+    assosiated_role: UserRole | None = None
 
 
 class RuleUpdateDTO(BaseDTO):

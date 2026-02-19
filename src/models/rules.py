@@ -11,7 +11,9 @@ from src.schemas.auth import UserRole
 class Rule(Base, PrimaryKeyMixin, TimingMixin):
     __tablename__ = "rules"
 
-    assosiated_role: Mapped[UserRole | None] = mapped_column(ENUM(UserRole), nullable=True)
+    assosiated_role: Mapped[UserRole | None] = (
+        mapped_column(ENUM(UserRole), nullable=True)
+    )
     code: Mapped[str] = mapped_column(unique=True)
     title: Mapped[str] = mapped_column(unique=True)
     description: Mapped[str | None]
@@ -21,8 +23,12 @@ class Rule(Base, PrimaryKeyMixin, TimingMixin):
 class UserRule(Base, PrimaryKeyMixin, TimingMixin):
     __tablename__ = "user_rules"
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    rule_id: Mapped[int] = mapped_column(ForeignKey("rules.id"))
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id")
+    )
+    rule_id: Mapped[int] = mapped_column(
+        ForeignKey("rules.id")
+    )
 
     __table_args__ = (
         UniqueConstraint(

@@ -6,7 +6,9 @@ async def test_password_hashing():
     hashed_password = TokenService().hash_pwd(password)
     assert hashed_password
     assert hashed_password != password
-    is_same = TokenService().verify_pwd(password, hashed_password)
+    is_same = TokenService().verify_pwd(
+        password, hashed_password
+    )
     assert is_same
 
 
@@ -15,5 +17,7 @@ async def test_token_hashing():
     hashed_token = TokenService().hash_token(token)
     assert hashed_token
     assert hashed_token != token
-    is_same = TokenService().verify_token(token, hashed_token)
+    is_same = TokenService().verify_token(
+        token, hashed_token
+    )
     assert is_same
