@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Any, Dict
 
 from fastapi import status
@@ -128,8 +127,6 @@ AUTH_REGISTER_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
             role=UserRole.USER,
             first_name="Veronika",
             last_name="Ivanova",
-            created_at=datetime(1970, 1, 1, 0, 0, 0),
-            updated_at=datetime(1970, 1, 1, 0, 0, 0),
         ),
     },
     status.HTTP_409_CONFLICT: {
@@ -149,8 +146,6 @@ AUTH_PROFILE_RESPONSES: Dict[int | str, Dict[str, Any]] | None = {
             role=UserRole.USER,
             first_name="Veronika",
             last_name="Ivanova",
-            created_at=datetime(1970, 1, 1, 0, 0, 0),
-            updated_at=datetime(1970, 1, 1, 0, 0, 0),
         ),
     },
     status.HTTP_404_NOT_FOUND: {

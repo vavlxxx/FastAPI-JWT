@@ -29,7 +29,7 @@ class DBConfig(BaseModel):
     name: str
     port: int
     password: SecretStr
-    name_test: str = "jwt_db"
+    name_test: str = "postgres"
 
     @property
     def async_url(self) -> URL:

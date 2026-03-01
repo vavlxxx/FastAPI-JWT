@@ -4,7 +4,7 @@ from typing import Any
 
 from pydantic import Field, model_validator
 
-from src.schemas.base import BaseDTO, TimingDTO
+from src.schemas.base import BaseDTO
 
 
 class UserRole(str, Enum):
@@ -28,7 +28,7 @@ class UserAddDTO(BaseDTO):
     hashed_password: str
 
 
-class UserDTO(BaseDTO, TimingDTO):
+class UserDTO(BaseDTO):
     id: int
     username: str = Field(..., min_length=8, max_length=32)
     role: UserRole
@@ -74,7 +74,7 @@ class TokenUpdateDTO(BaseDTO):
     expires_at: datetime
 
 
-class TokenDTO(TokenAddDTO, TimingDTO):
+class TokenDTO(TokenAddDTO):
     id: int
 
 
