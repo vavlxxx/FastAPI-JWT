@@ -10,43 +10,16 @@ from fastapi import FastAPI
 
 from src.api import router as main_router
 from src.config import settings
-from src.db import engine, sessionmaker
-from src.schemas.rules import RuleAddDTO
-from src.services.rules import RuleService
-from src.utils.db_tools import DBHealthChecker, DBManager
-from src.utils.logging import (
-    configurate_logging,
-    get_logger,
-)
+from src.db import engine
+from src.utils.db_tools import DBHealthChecker
+from src.utils.logging import configurate_logging, get_logger
 
 
 @asynccontextmanager
-async def lifespan(
-    app: FastAPI,
-) -> AsyncGenerator[None, None]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger = get_logger("src")
 
     await DBHealthChecker(engine=engine).check()
-
-    async with DBManager(
-        session_factory=sessionmaker
-    ) as db:
-        try:
-            await RuleService(db=db).add_rules(
-                rules=[
-                    RuleAddDTO(
-                        code="test",
-                        title="test",
-                        description="test",
-                        error_message="test",
-                    ),
-                ]
-            )
-        except Exception:
-            logger.error(
-                "Health check failed. Shutting down...",
-                exc_info=True,
-            )
 
     logger.info("All checks passed!")
     yield

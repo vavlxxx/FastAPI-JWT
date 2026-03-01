@@ -1,10 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends, Request
-from fastapi.security import (
-    HTTPAuthorizationCredentials,
-    HTTPBearer,
-)
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import ExpiredSignatureError
 
 from src.api.v1.dependencies.db import DBDep
@@ -26,9 +23,7 @@ from src.utils.exceptions import (
 )
 
 _bearer = HTTPBearer()
-BearerCredentials = Annotated[
-    HTTPAuthorizationCredentials, Depends(_bearer)
-]
+BearerCredentials = Annotated[HTTPAuthorizationCredentials, Depends(_bearer)]
 
 
 def _get_access_token(creds: BearerCredentials):
@@ -36,9 +31,7 @@ def _get_access_token(creds: BearerCredentials):
 
 
 def _get_refresh_token(request: Request):
-    token = request.cookies.get(
-        settings.auth.REFRESH_TOKEN_COOKIE_KEY
-    )
+    token = request.cookies.get(settings.auth.REFRESH_TOKEN_COOKIE_KEY)
     if not token:
         raise MissingTokenHTTPError
     return token
@@ -55,9 +48,7 @@ def _decode_token(token: str):
         raise CannotDecodeTokenHTTPError from exc
 
 
-def _validate_token_type(
-    payload: dict, expected_type: TokenType
-):
+def _validate_token_type(payload: dict, expected_type: TokenType):
     token_type = payload.get("type")
     if not token_type or token_type != expected_type.value:
         raise InvalidTokenTypeHTTPError(
@@ -77,9 +68,7 @@ def resolve_token_by_type(token_type: TokenType):
     if token_type == TokenType.ACCESS:
 
         def get_sub_from_access(creds: BearerCredentials):
-            payload = _decode_token(
-                _get_access_token(creds)
-            )
+            payload = _decode_token(_get_access_token(creds))
             _validate_token_type(payload, token_type)
             return int(_extract_token_subject(payload))
 
@@ -87,18 +76,12 @@ def resolve_token_by_type(token_type: TokenType):
 
     elif token_type == TokenType.REFRESH:
 
-        async def get_sub_from_refresh(
-            request: Request, db: DBDep
-        ):
-            payload = _decode_token(
-                _get_refresh_token(request)
-            )
+        async def get_sub_from_refresh(request: Request, db: DBDep):
+            payload = _decode_token(_get_refresh_token(request))
             _validate_token_type(payload, token_type)
             uid = int(_extract_token_subject(payload))
             try:
-                await db.tokens.get_one(
-                    user_id=uid, type=token_type
-                )
+                await db.tokens.get_one(user_id=uid, type=token_type)
             except ObjectNotFoundError as exc:
                 raise WithdrawnTokenHTTPError from exc
             return uid
@@ -106,12 +89,8 @@ def resolve_token_by_type(token_type: TokenType):
         return get_sub_from_refresh
 
 
-UidByAccess = Annotated[
-    int, Depends(resolve_token_by_type(TokenType.ACCESS))
-]
-UidByRefresh = Annotated[
-    int, Depends(resolve_token_by_type(TokenType.REFRESH))
-]
+UidByAccess = Annotated[int, Depends(resolve_token_by_type(TokenType.ACCESS))]
+UidByRefresh = Annotated[int, Depends(resolve_token_by_type(TokenType.REFRESH))]
 
 
 async def get_current_user(uid: UidByAccess, db: DBDep):

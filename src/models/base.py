@@ -11,9 +11,7 @@ class Base(DeclarativeBase, TimingMixin):
         "eager_defaults": True,
     }
 
-    metadata = MetaData(
-        naming_convention=settings.db.naming_convention
-    )
+    metadata = MetaData(naming_convention=settings.db.naming_convention)
     repr_exclude_cols = (
         "created_at",
         "updated_at",
@@ -21,10 +19,7 @@ class Base(DeclarativeBase, TimingMixin):
 
     def to_dict(self) -> dict:
         columns = class_mapper(self.__class__).columns
-        return {
-            column.key: getattr(self, column.key)
-            for column in columns
-        }
+        return {column.key: getattr(self, column.key) for column in columns}
 
     def __repr__(self):
         cols = []
@@ -32,6 +27,4 @@ class Base(DeclarativeBase, TimingMixin):
             if k not in self.repr_exclude_cols:
                 cols.append(f"{k}={v!r}")
 
-        return (
-            f"{self.__class__.__name__}({', '.join(cols)})"
-        )
+        return f"{self.__class__.__name__}({', '.join(cols)})"

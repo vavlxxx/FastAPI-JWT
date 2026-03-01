@@ -3,10 +3,7 @@ from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, SecretStr
-from pydantic_settings import (
-    BaseSettings,
-    SettingsConfigDict,
-)
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
 BASE_DIR = Path(__file__).parent.parent
@@ -48,17 +45,11 @@ class DBConfig(BaseModel):
 
 class TokenConfig(BaseModel):
     REFRESH_TOKEN_COOKIE_KEY: str = "refresh_token"
-    JWT_EXPIRE_DELTA_ACCESS: timedelta = timedelta(
-        minutes=15
-    )
+    JWT_EXPIRE_DELTA_ACCESS: timedelta = timedelta(minutes=15)
     JWT_EXPIRE_DELTA_REFRESH: timedelta = timedelta(days=30)
     JWT_ALGORITHM: str = "RS256"
-    JWT_PRIVATE_KEY: Path = (
-        BASE_DIR / "creds" / "jwt-private.pem"
-    )
-    JWT_PUBLIC_KEY: Path = (
-        BASE_DIR / "creds" / "jwt-public.pem"
-    )
+    JWT_PRIVATE_KEY: Path = BASE_DIR / "creds" / "jwt-private.pem"
+    JWT_PUBLIC_KEY: Path = BASE_DIR / "creds" / "jwt-public.pem"
 
 
 class GunicornConfig(BaseModel):

@@ -5,9 +5,7 @@ from src.utils.db_tools import DBManager
 
 
 @pytest.fixture(scope="module")
-async def register_user(
-    ac: AsyncClient, db_module: DBManager
-) -> tuple[str, str]:
+async def register_user(ac: AsyncClient, db_module: DBManager) -> tuple[str, str]:
     await db_module.tokens.delete_all()
     await db_module.auth.delete_all()
     await db_module.commit()
@@ -56,10 +54,7 @@ async def test_login_user(
         json={"username": username, "password": password},
     )
     assert response
-    assert (
-        response.status_code
-        == expected_response_status_code
-    )
+    assert response.status_code == expected_response_status_code
 
 
 async def test_check_login_return_body(
@@ -69,10 +64,7 @@ async def test_check_login_return_body(
 ) -> None:
     response = await ac.post(
         "/auth/login/",
-        json={
-            "username": register_user[0],
-            "password": register_user[1],
-        },
+        json={"username": register_user[0], "password": register_user[1]},
     )
     assert response.status_code == 200
     data = response.json()
