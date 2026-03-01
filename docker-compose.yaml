@@ -1,7 +1,7 @@
 services:
   app:
-    container_name: jwt_app
-    image: jwt_app:latest
+    container_name: jwt_app_v1.0.0
+    image: jwt_app:1.0.0
     build:
       context: .
     env_file:
@@ -11,7 +11,7 @@ services:
     networks:
       - "app_net"
     depends_on:
-      - db
+      - postgres
     command: "poetry run python ./src/gunicorn/run.py"
     volumes:
       - ./logs:/app/logs
@@ -22,8 +22,8 @@ services:
           path: ./src
           target: /app/src
 
-  db:
-    container_name: jwt_db
+  postgres:
+    container_name: jwt_postgres_db
     image: "postgres:17"
     ports:
       - 6432:5432
