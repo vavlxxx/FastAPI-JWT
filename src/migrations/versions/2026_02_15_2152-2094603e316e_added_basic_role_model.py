@@ -14,14 +14,18 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "2094603e316e"
-down_revision: Union[str, Sequence[str], None] = "8093419d4e91"
+down_revision: Union[str, Sequence[str], None] = (
+    "8093419d4e91"
+)
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
     op.execute("DROP TYPE IF EXISTS userrole")
-    user_role_enum = postgresql.ENUM("SUPERUSER", "ADMIN", "USER", name="userrole")
+    user_role_enum = postgresql.ENUM(
+        "SUPERUSER", "ADMIN", "USER", name="userrole"
+    )
     user_role_enum.create(op.get_bind())
 
     op.add_column(

@@ -1,8 +1,14 @@
-from fastapi import APIRouter, Body, Depends, Response
+from fastapi import APIRouter, Body, Response
 
-from src.api.v1.dependencies.auth import UidByAccess, UidByRefresh
+from src.api.v1.dependencies.auth import (
+    UidByAccess,
+    UidByRefresh,
+)
 from src.api.v1.dependencies.db import DBDep
-from src.api.v1.examples.auth import get_examples_auth_post_login, get_examples_auth_put_profile
+from src.api.v1.examples.auth import (
+    get_examples_auth_post_login,
+    get_examples_auth_put_profile,
+)
 from src.api.v1.responses.auth import (
     AUTH_LOGIN_RESPONSES,
     AUTH_LOGOUT_RESPONSES,
@@ -11,7 +17,13 @@ from src.api.v1.responses.auth import (
     AUTH_REGISTER_RESPONSES,
 )
 from src.config import settings
-from src.schemas.auth import TokenResponseDTO, UserDTO, UserLoginDTO, UserRegisterDTO, UserUpdateDTO
+from src.schemas.auth import (
+    TokenResponseDTO,
+    UserDTO,
+    UserLoginDTO,
+    UserRegisterDTO,
+    UserUpdateDTO,
+)
 from src.services.auth import AuthService, TokenService
 from src.utils.exceptions import (
     InvalidLoginDataError,
@@ -21,7 +33,6 @@ from src.utils.exceptions import (
     UserNotFoundError,
     UserNotFoundHTTPError,
 )
-from src.utils.permissions import IsAdminPermission
 
 router = APIRouter(
     prefix="/auth",
@@ -46,9 +57,11 @@ async def login(
     ## 🔒 Войти в существующий акканут
     """
     try:
-        token_response: TokenResponseDTO = await AuthService(db).login_user(
-            login_data=login_data,
-            response=response,
+        token_response: TokenResponseDTO = (
+            await AuthService(db).login_user(
+                login_data=login_data,
+                response=response,
+            )
         )
     except InvalidLoginDataError as exc:
         raise InvalidLoginDataHTTPError from exc
@@ -72,7 +85,9 @@ async def register(
     ## 🔒 Зарегистрировать нового пользователя
     """
     try:
-        return await AuthService(db).register_user(register_data=register_data)
+        return await AuthService(db).register_user(
+            register_data=register_data
+        )
     except UserExistsError as exc:
         raise UserExistsHTTPError from exc
 
@@ -81,7 +96,6 @@ async def register(
     path="/profile/",
     summary="Получить профиль пользователя",
     responses=AUTH_PROFILE_RESPONSES,
-    dependencies=(Depends(IsAdminPermission()),),
 )
 async def get_profile(
     db: DBDep,
@@ -109,7 +123,9 @@ async def refresh(
     """
     ## 🗝️ Получить новые Access и Refresh токены
     """
-    token_response: TokenResponseDTO = await TokenService(db).update_tokens(
+    token_response: TokenResponseDTO = await TokenService(
+        db
+    ).update_tokens(
         uid=uid,
         response=response,
     )
@@ -133,7 +149,9 @@ async def update_profile(
     """
     ## 👤 Обновить профиль пользователя
     """
-    profile = await AuthService(db).update_profile(uid=uid, data=data)
+    profile = await AuthService(db).update_profile(
+        uid=uid, data=data
+    )
     return profile
 
 

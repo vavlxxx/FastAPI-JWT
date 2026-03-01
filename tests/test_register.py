@@ -38,7 +38,10 @@ async def test_register_user(
         "/auth/register/",
         json={"username": username, "password": password},
     )
-    assert response.status_code == expected_response_status_code
+    assert (
+        response.status_code
+        == expected_response_status_code
+    )
     users = await db.auth.get_all()
     assert len(users) == expected_user_count
 
@@ -48,7 +51,10 @@ async def test_register_return_body(
 ) -> None:
     response = await ac.post(
         "/auth/register/",
-        json={"username": "qwerty123", "password": "qwerty123"},
+        json={
+            "username": "qwerty123",
+            "password": "qwerty123",
+        },
     )
     assert response
     assert response.status_code == 200

@@ -6,7 +6,10 @@ from urllib.parse import urljoin
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from src.api.v1.dependencies.db import get_db, get_db_with_null_pool
+from src.api.v1.dependencies.db import (
+    get_db,
+    get_db_with_null_pool,
+)
 from src.config import settings
 from src.db import engine_null_pool
 from src.main import app
@@ -49,7 +52,9 @@ async def clean_toknes(db: DBManager) -> None:
 
 
 @pytest.fixture
-async def clean_users(db: DBManager, clean_toknes: None) -> None:
+async def clean_users(
+    db: DBManager, clean_toknes: None
+) -> None:
     await db.auth.delete_all()
     await db.commit()
 
@@ -66,7 +71,9 @@ async def async_main() -> None:
 async def ac() -> AsyncGenerator[AsyncClient, Any]:
     app_ = ASGITransport(app=app)
     host = f"http://{settings.uvicorn.host}:{settings.uvicorn.port}"
-    api_meta = f"{settings.app.api_prefix}{settings.app.v1_prefix}"
+    api_meta = (
+        f"{settings.app.api_prefix}{settings.app.v1_prefix}"
+    )
     url = urljoin(host, api_meta)
     async with AsyncClient(
         transport=app_,
@@ -76,13 +83,21 @@ async def ac() -> AsyncGenerator[AsyncClient, Any]:
 
 
 @pytest.fixture(scope="session")
-async def authenticated_ac(ac: AsyncClient) -> AsyncGenerator[AsyncClient, None]:
+async def authenticated_ac(
+    ac: AsyncClient,
+) -> AsyncGenerator[AsyncClient, None]:
     username = password = "admin123456"
-    resp_register = await ac.post("/auth/register/", json={"username": username, "password": password})
+    resp_register = await ac.post(
+        "/auth/register/",
+        json={"username": username, "password": password},
+    )
     assert resp_register
     assert resp_register.status_code == 200
 
-    resp_login = await ac.post("/auth/login/", json={"username": username, "password": password})
+    resp_login = await ac.post(
+        "/auth/login/",
+        json={"username": username, "password": password},
+    )
     assert resp_login
     assert resp_login.status_code == 200
 

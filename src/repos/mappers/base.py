@@ -7,8 +7,12 @@ from src.schemas.base import BaseDTO
 
 ModelType = TypeVar("ModelType", bound=Base)
 SchemaType = TypeVar("SchemaType", bound=BaseDTO)
-SchemaReturnType = TypeVar("SchemaReturnType", bound=BaseDTO)
-SchemaUpdateType = TypeVar("SchemaUpdateType", bound=BaseDTO)
+SchemaReturnType = TypeVar(
+    "SchemaReturnType", bound=BaseDTO
+)
+SchemaUpdateType = TypeVar(
+    "SchemaUpdateType", bound=BaseDTO
+)
 SchemaAddType = TypeVar("SchemaAddType", bound=BaseDTO)
 
 

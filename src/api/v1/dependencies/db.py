@@ -7,12 +7,18 @@ from src.utils.db_tools import DBManager
 
 
 async def get_db() -> AsyncGenerator[DBManager, Any]:
-    async with DBManager(session_factory=sessionmaker) as db:
+    async with DBManager(
+        session_factory=sessionmaker
+    ) as db:
         yield db
 
 
-async def get_db_with_null_pool() -> AsyncGenerator[DBManager, Any]:
-    async with DBManager(session_factory=sessionmaker_null_pool) as db:
+async def get_db_with_null_pool() -> AsyncGenerator[
+    DBManager, Any
+]:
+    async with DBManager(
+        session_factory=sessionmaker_null_pool
+    ) as db:
         yield db
 
 
